@@ -3,9 +3,6 @@ import 'package:my_hero/services/api.dart';
 
 class FavoritesBloc extends ChangeNotifier {
   var favorites = List<Character>.empty(growable: true);
-  FavoritesBloc() {
-    print("mounted");
-  }
   get() {
     return favorites;
   }

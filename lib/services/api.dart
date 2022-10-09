@@ -61,4 +61,11 @@ class Character {
           "${json['thumbnail']["path"]}.${json['thumbnail']["extension"]}",
     ));
   }
+
+  static Map<String, dynamic> toMap(Character character) => {
+        'id': character.id,
+        'name': character.name,
+        'description': character.description,
+        'thumbnail': character.thumbnail,
+      };
 }
