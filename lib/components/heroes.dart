@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:my_hero/components/hero_card.dart';
 import 'package:my_hero/services/api.dart';
-import 'dart:convert';
 
 class HeroesGridView extends StatefulWidget {
   final List<Character> heroes;
