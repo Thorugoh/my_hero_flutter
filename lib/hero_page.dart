@@ -1,8 +1,12 @@
 import "package:flutter/material.dart";
+import 'package:my_hero/blocs/favorites.dart';
 import 'package:my_hero/components/favorite_icon.dart';
+import 'package:my_hero/services/api.dart';
+import 'package:provider/provider.dart';
 
 class HeroPage extends StatefulWidget {
-  const HeroPage({super.key});
+  final Character character;
+  const HeroPage({super.key, required this.character});
 
   @override
   State<HeroPage> createState() => _HeroPageState();
@@ -11,6 +15,9 @@ class HeroPage extends StatefulWidget {
 class _HeroPageState extends State<HeroPage> {
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<FavoritesBloc>(context);
+    final isFavorite = bloc.isFavorite(widget.character);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -25,24 +32,23 @@ class _HeroPageState extends State<HeroPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Image(
-            image: NetworkImage(
-                'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+          Image(
+            image: NetworkImage(widget.character.thumbnail),
           ),
           Expanded(
             flex: 1,
             child: Container(
-              color: Colors.black,
+              color: isFavorite ? Colors.redAccent : Colors.black,
               width: double.infinity,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.all(10),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
                       child: Text(
-                        "Owl",
-                        style: TextStyle(
+                        widget.character.name,
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 40,
                         ),
@@ -54,8 +60,9 @@ class _HeroPageState extends State<HeroPage> {
                         padding: const EdgeInsets.all(10),
                         child: FavoriteIcon(
                           size: 35,
-                          onTapFavorite: () {},
-                          isFavorited: true,
+                          onTapFavorite: () =>
+                              bloc.toggleFavorite(widget.character),
+                          isFavorited: isFavorite,
                         ),
                       ),
                     )

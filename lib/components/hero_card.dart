@@ -1,46 +1,42 @@
 import "package:flutter/material.dart";
+import 'package:my_hero/blocs/favorites.dart';
 import 'package:my_hero/components/favorite_icon.dart';
 import 'package:my_hero/hero_page.dart';
+import 'package:my_hero/services/api.dart';
+import 'package:provider/provider.dart';
 
 class HeroCard extends StatefulWidget {
-  const HeroCard({super.key});
+  final Character character;
+
+  const HeroCard({super.key, required this.character});
 
   @override
   State<HeroCard> createState() => _HeroCardState();
 }
 
 class _HeroCardState extends State<HeroCard> {
-  var isFavorited = false;
   var containerBackgroundColor = Colors.black;
-
-  void favoriteChar() {
-    isFavorited = !isFavorited;
-    if (isFavorited) {
-      setState(() {
-        containerBackgroundColor = Colors.redAccent;
-      });
-    } else {
-      setState(() {
-        containerBackgroundColor = Colors.black;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
+    final bloc = Provider.of<FavoritesBloc>(context);
+
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const HeroPage()));
+          context,
+          MaterialPageRoute(
+            builder: (context) => HeroPage(character: widget.character),
+          ),
+        );
       },
       child: Column(
         children: [
           Container(
             color: Colors.white,
             width: double.infinity,
-            child: const Image(
-              image: NetworkImage(
-                  'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'),
+            child: Image(
+              image: NetworkImage(widget.character.thumbnail),
               fit: BoxFit.cover,
               height: 160,
             ),
@@ -50,7 +46,9 @@ class _HeroCardState extends State<HeroCard> {
             height: 5,
           ),
           Container(
-            color: containerBackgroundColor,
+            color: bloc.isFavorite(widget.character)
+                ? Colors.redAccent
+                : Colors.black,
             height: 136,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,10 +56,10 @@ class _HeroCardState extends State<HeroCard> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.only(top: 4, left: 4),
-                  child: const Text(
-                    "Owl",
+                  child: Text(
+                    widget.character.name,
                     textDirection: TextDirection.ltr,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                     ),
@@ -73,8 +71,9 @@ class _HeroCardState extends State<HeroCard> {
                     padding: const EdgeInsets.all(12.0),
                     child: FavoriteIcon(
                       size: 25,
-                      onTapFavorite: favoriteChar,
-                      isFavorited: isFavorited,
+                      onTapFavorite: () =>
+                          bloc.toggleFavorite(widget.character),
+                      isFavorited: bloc.isFavorite(widget.character),
                     ),
                   ),
                 )
